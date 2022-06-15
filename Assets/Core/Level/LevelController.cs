@@ -53,55 +53,7 @@ namespace WalkingBuddies.Core.Level
 				var levelField = new LevelField(field);
 				var tokens = CardTokeniser.Tokenise(cardGrid);
 				var result = await CardInterpreter.InterpretAsync(
-					new CardKinds[][]
-					{
-						new CardKinds[]
-						{
-							CardKinds.IF,
-							CardKinds.HILL,
-							CardKinds.TURTLE,
-							CardKinds.THEN,
-							CardKinds.SWAP,
-							CardKinds.BIRD,
-							CardKinds.SWAP,
-							CardKinds.TURTLE,
-							CardKinds.ELSE,
-							CardKinds.WALK,
-						},
-						new CardKinds[]
-						{
-							CardKinds.IF,
-							CardKinds.SEA,
-							CardKinds.THEN,
-							CardKinds.SWAP,
-							CardKinds.TURTLE,
-							CardKinds.SWAP,
-							CardKinds.BIRD,
-							CardKinds.ELSE,
-							CardKinds.WALK,
-						},
-						// new CardKinds[]
-						// {
-						// 	CardKinds.IF,
-						// 	CardKinds.HILL,
-						// 	CardKinds.TURTLE,
-						// 	CardKinds.THEN,
-						// 	CardKinds.SWAP,
-						// 	CardKinds.BIRD,
-						// 	CardKinds.SWAP,
-						// 	CardKinds.TURTLE,
-						// 	CardKinds.ELSE,
-						// 	CardKinds.IF,
-						// 	CardKinds.SEA,
-						// 	CardKinds.THEN,
-						// 	CardKinds.SWAP,
-						// 	CardKinds.TURTLE,
-						// 	CardKinds.SWAP,
-						// 	CardKinds.BIRD,
-						// 	CardKinds.ELSE,
-						// 	CardKinds.WALK,
-						// },
-					},
+					tokens,
 					cancellationTokenSource.Token,
 					levelField
 				);

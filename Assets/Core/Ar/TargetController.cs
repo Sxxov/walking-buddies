@@ -18,21 +18,16 @@ namespace WalkingBuddies.Core.Ar
 
 		public event OnGridUpdate? OnGridUpdate;
 
-		// private float elapsed = 0f;
+		private float elapsed = 0f;
 
-		// void Update()
-		// {
-		// 	elapsed += Time.deltaTime;
-		// 	if (elapsed >= 1f)
-		// 	{
-		// 		elapsed %= 1f;
-		// 		UpdateCardGrid();
-		// 	}
-		// }
-
-		void Start()
+		void Update()
 		{
-			OnGridUpdate?.Invoke(cardGrid);
+			elapsed += Time.deltaTime;
+			if (elapsed >= 1f)
+			{
+				elapsed %= 1f;
+				UpdateCardGrid();
+			}
 		}
 
 		public void Add(TargetThing thing)
