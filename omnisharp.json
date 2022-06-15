@@ -1,0 +1,25 @@
+{
+	"FormattingOptions": {
+		"enableEditorConfigSupport": true,
+		"newLine": "\r\n",
+		"useTabs": true
+	},
+	"RoslynExtensionsOptions": {
+		"enableDecompilationSupport": true,
+		"enableImportCompletion": true,
+		"enableAnalyzersSupport": true,
+		"LocationPaths": [
+			"./NuGet/microsoft.unity.analyzers.1.13.0"
+		],
+		"inlayHintsOptions": {
+			"enableForParameters": true,
+			"forLiteralParameters": true,
+			"forIndexerParameters": true,
+			"forObjectCreationParameters": true,
+			"forOtherParameters": true,
+			"suppressForParametersThatDifferOnlyBySuffix": true,
+			"suppressForParametersThatMatchMethodIntent": true,
+			"suppressForParametersThatMatchArgumentName": true
+		}
+	}
+}
