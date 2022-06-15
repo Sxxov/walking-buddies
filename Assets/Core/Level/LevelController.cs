@@ -21,7 +21,7 @@ namespace WalkingBuddies.Core.Level
 
 		private BuddiesStore<GameObject> buddies = new();
 
-		private bool isHidden = true;
+		private bool isHidden = false;
 
 		private Coroutine? currTweenCoroutine;
 
