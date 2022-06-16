@@ -38,7 +38,7 @@ MonoBehaviour:
   deviceTracker:
     autoStartTracker: 1
     arcoreRequirement: 1
-    autoImportArcore: 1
+    autoImportArcore: 0
     thirdPartyARCoreClientDetected: 0
   playmode:
     mSequencePath: C:/Users/sxxov/Downloads/B9ECED6F.ASUSPCAssistant_qmba6cd70vzyy!App/Link_to_MyASUS/20220525_231154_x264.mp4

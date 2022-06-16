@@ -37,7 +37,7 @@ namespace WalkingBuddies.Core.Card
 				);
 		}
 
-		public CardNode(TargetThing thing)
+		public CardNode(TargetBehaviour thing)
 		{
 			kind = thing.kind;
 			transform = thing.transform;

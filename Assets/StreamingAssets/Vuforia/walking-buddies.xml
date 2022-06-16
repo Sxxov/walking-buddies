@@ -1,6 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <QCARConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="qcar_config.xsd">
   <Tracking>
+    <ImageTarget name="turtle-bottom_3" size="1.000000 0.736184" />
+    <ImageTarget name="turtle-top_3" size="1.000000 0.736184" />
+    <ImageTarget name="raincloud-bottom_4" size="1.000000 0.736184" />
+    <ImageTarget name="raincloud-top_4" size="1.000000 0.736184" />
+    <ImageTarget name="hill-bottom_4" size="1.000000 0.736184" />
+    <ImageTarget name="hill-top_4" size="1.000000 0.736184" />
+    <ImageTarget name="sea-bottom_4" size="1.000000 0.736184" />
+    <ImageTarget name="sea-top_4" size="1.000000 0.736184" />
+    <ImageTarget name="grass-bottom_4" size="1.000000 0.736184" />
+    <ImageTarget name="grass-top_4" size="1.000000 0.736184" />
+    <ImageTarget name="until-bottom_4" size="1.000000 0.736184" />
+    <ImageTarget name="until-top_4" size="1.000000 0.736184" />
+    <ImageTarget name="else-bottom_4" size="1.000000 0.736184" />
+    <ImageTarget name="else-top_4" size="1.000000 0.736184" />
+    <ImageTarget name="then-bottom_4" size="1.000000 0.736184" />
+    <ImageTarget name="then-top_4" size="1.000000 0.736184" />
+    <ImageTarget name="if-bottom_4" size="1.000000 0.736184" />
+    <ImageTarget name="if-top_4" size="1.000000 0.736184" />
+    <ImageTarget name="turtle-bottom_4" size="1.000000 0.736184" />
+    <ImageTarget name="turtle-top_4" size="1.000000 0.736184" />
+    <ImageTarget name="bird-bottom_4" size="1.000000 0.736184" />
+    <ImageTarget name="bird-top_4" size="1.000000 0.736184" />
+    <ImageTarget name="walk-bottom_4" size="1.000000 0.736184" />
+    <ImageTarget name="walk-top_4" size="1.000000 0.736184" />
+    <ImageTarget name="raincloud-bottom_3" size="1.000000 0.736184" />
+    <ImageTarget name="raincloud-top_3" size="1.000000 0.736184" />
+    <ImageTarget name="hill-bottom_3" size="1.000000 0.736184" />
+    <ImageTarget name="hill-top_3" size="1.000000 0.736184" />
+    <ImageTarget name="sea-bottom_3" size="1.000000 0.736184" />
+    <ImageTarget name="sea-top_3" size="1.000000 0.736184" />
+    <ImageTarget name="grass-bottom_3" size="1.000000 0.736184" />
+    <ImageTarget name="grass-top_3" size="1.000000 0.736184" />
+    <ImageTarget name="until-bottom_3" size="1.000000 0.736184" />
+    <ImageTarget name="until-top_3" size="1.000000 0.736184" />
+    <ImageTarget name="else-bottom_3" size="1.000000 0.736184" />
+    <ImageTarget name="else-top_3" size="1.000000 0.736184" />
+    <ImageTarget name="then-bottom_3" size="1.000000 0.736184" />
+    <ImageTarget name="then-top_3" size="1.000000 0.736184" />
+    <ImageTarget name="if-bottom_3" size="1.000000 0.736184" />
+    <ImageTarget name="if-top_3" size="1.000000 0.736184" />
+    <ImageTarget name="bird-bottom_3" size="1.000000 0.736184" />
+    <ImageTarget name="bird-top_3" size="1.000000 0.736184" />
+    <ImageTarget name="walk-bottom_3" size="1.000000 0.736184" />
+    <ImageTarget name="walk-top_3" size="1.000000 0.736184" />
+    <ImageTarget name="swap-bottom_4" size="1.000000 0.736184" />
+    <ImageTarget name="swap-top_4" size="1.000000 0.736184" />
+    <ImageTarget name="swap-bottom_3" size="1.000000 0.736184" />
+    <ImageTarget name="swap-top_3" size="1.000000 0.736184" />
     <ImageTarget name="raincloud-bottom_2" size="1.000000 0.736184" />
     <ImageTarget name="raincloud-top_2" size="1.000000 0.736184" />
     <ImageTarget name="hill-bottom_2" size="1.000000 0.736184" />

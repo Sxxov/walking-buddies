@@ -33,6 +33,17 @@ namespace WalkingBuddies.Core.Level
 
 		public bool hasEnded { get; private set; }
 
+		public static BuddiesStore<Vector2Int> buddyPositionsInit
+		{
+			get =>
+				new()
+				{
+					player = new(0, 1),
+					turtle = new(0, 0),
+					bird = new(0, 2),
+				};
+		}
+
 		public BuddiesStore<bool> success
 		{
 			get =>
@@ -48,13 +59,7 @@ namespace WalkingBuddies.Core.Level
 
 		public BuddiesStore<TileCardKinds?> buddyNextTiles = new();
 
-		public BuddiesStore<Vector2Int> buddyPositions =
-			new()
-			{
-				player = new(0, 1),
-				turtle = new(0, 0),
-				bird = new(0, 2),
-			};
+		public BuddiesStore<Vector2Int> buddyPositions = buddyPositionsInit;
 
 		public readonly List<BuddiesStore<Vector2Int>> buddyPositionsHistory =
 			new();
@@ -240,10 +245,6 @@ namespace WalkingBuddies.Core.Level
 			BuddiesStore<Vector2Int> store
 		)
 		{
-			Debug.Log(
-				$"cloned: player = [{store.player.x}, {store.player.y}], turtle = [{store.turtle.x}, {store.turtle.y}], bird = [{store.bird.x}, {store.bird.y}]"
-			);
-
 			return new()
 			{
 				player = store.player + Vector2Int.zero,

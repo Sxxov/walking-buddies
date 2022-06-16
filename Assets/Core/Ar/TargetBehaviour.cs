@@ -7,7 +7,7 @@ using WalkingBuddies.Core.Card;
 
 namespace WalkingBuddies.Core.Ar
 {
-	public class TargetThing : MonoBehaviour
+	public class TargetBehaviour : MonoBehaviour
 	{
 		[SerializeField]
 		private TargetController controller = null!;
@@ -31,7 +31,10 @@ namespace WalkingBuddies.Core.Ar
 		{
 			if (isActiveAndEnabled)
 			{
-				if (status.Status == Status.TRACKED)
+				if (
+					status.Status == Status.TRACKED
+					|| status.Status == Status.EXTENDED_TRACKED
+				)
 				{
 					StartCoroutine(OnTargetFound());
 				}

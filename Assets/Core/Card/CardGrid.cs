@@ -67,12 +67,12 @@ namespace WalkingBuddies.Core.Card
 			}
 		}
 
-		public CardGrid(TargetThing[] things)
+		public CardGrid(TargetBehaviour[] things)
 		{
 			Update(things);
 		}
 
-		public CardGrid Update(TargetThing[] things)
+		public CardGrid Update(TargetBehaviour[] things)
 		{
 			if (things.Length <= 0)
 			{

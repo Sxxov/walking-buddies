@@ -12,9 +12,9 @@ namespace WalkingBuddies.Core.Ar
 
 	public class TargetController : MonoBehaviour
 	{
-		private readonly List<TargetThing> things = new();
+		private readonly List<TargetBehaviour> things = new();
 
-		public readonly CardGrid cardGrid = new(new TargetThing[] { });
+		public readonly CardGrid cardGrid = new(new TargetBehaviour[] { });
 
 		public event OnGridUpdate? OnGridUpdate;
 
@@ -30,13 +30,13 @@ namespace WalkingBuddies.Core.Ar
 			}
 		}
 
-		public void Add(TargetThing thing)
+		public void Add(TargetBehaviour thing)
 		{
 			things.Add(thing);
 			UpdateCardGrid();
 		}
 
-		public void Remove(TargetThing thing)
+		public void Remove(TargetBehaviour thing)
 		{
 			things.Remove(thing);
 			UpdateCardGrid();
@@ -53,7 +53,7 @@ namespace WalkingBuddies.Core.Ar
 			var i = 0;
 			if (
 				prevNodes.Length != currNodes.Length
-				|| currNodes.Any((v) => prevNodes[i++] != v)
+				|| currNodes.Any((v) => prevNodes[i++].kind != v.kind)
 			)
 			{
 				OnGridUpdate?.Invoke(cardGrid);

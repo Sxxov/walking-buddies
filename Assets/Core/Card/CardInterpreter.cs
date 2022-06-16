@@ -22,19 +22,42 @@ namespace WalkingBuddies.Core.Card
 		)
 		{
 			var source =
-				new TaskCompletionSource<List<BuddiesStore<Vector2Int>>>();
+				new TaskCompletionSource<(List<
+						BuddiesStore<Vector2Int>
+					>?, ParseException?)>();
 			var thread = new Thread(
 				new ThreadStart(() =>
 				{
-					source.SetResult(
-						Interpret(tokens, cancellationToken, levelField)
-					);
+					try
+					{
+						source.SetResult(
+							(
+								Interpret(
+									tokens,
+									cancellationToken,
+									levelField
+								),
+								null
+							)
+						);
+					}
+					catch (ParseException e)
+					{
+						source.SetResult((null, e));
+					}
 				})
 			);
 
 			thread.Start();
 
-			return await source.Task;
+			var (result, error) = await source.Task;
+
+			if (error is not null)
+			{
+				throw error;
+			}
+
+			return result!;
 		}
 
 		public static List<BuddiesStore<Vector2Int>> Interpret(

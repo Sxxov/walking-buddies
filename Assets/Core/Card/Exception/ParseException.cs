@@ -15,7 +15,7 @@ namespace WalkingBuddies.Core.Card
 					"\n",
 					input.Select(
 						(kind, kindI) =>
-							$"{kindI, 2}| {(kindI == i ? $"{CardTokeniser.GetNotatedName(kind)} ← (!){(expecteds is null ? "" : $"Expected {string.Join(" | ", expecteds.Select((expected) => CardTokeniser.GetNotatedName(expected)))}")}" : CardTokeniser.GetNotatedName(kind))}"
+							$"{kindI, 2}| {(kindI == i ? $"{CardTokeniser.GetNotatedName(kind)} ← (!) {(expecteds is null ? "" : $" Expected {string.Join(" | ", expecteds.Select((expected) => CardTokeniser.GetNotatedName(expected)))}")}" : CardTokeniser.GetNotatedName(kind))}"
 					)
 				) + (i >= input.Length ? "\n← (!) Unexpected end of input" : "")
 			) { }
@@ -30,7 +30,7 @@ namespace WalkingBuddies.Core.Card
 					"\n",
 					input.Select(
 						(kind, kindI) =>
-							$"{kindI, 2}| {(kindI == i ? $"{CardTokeniser.GetNotatedName(kind)} ← (!){(predicate is null ? "" : $"Expected to pass predicate({predicate}")})" : CardTokeniser.GetNotatedName(kind))}"
+							$"{kindI, 2}| {(kindI == i ? $"{CardTokeniser.GetNotatedName(kind)} ← (!) {(predicate is null ? "" : $"Expected to pass predicate({predicate}")})" : CardTokeniser.GetNotatedName(kind))}"
 					)
 				) + (i >= input.Length ? "\n← (!) Unexpected end of input" : "")
 			) { }
