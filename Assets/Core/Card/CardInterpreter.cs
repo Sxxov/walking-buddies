@@ -21,10 +21,11 @@ namespace WalkingBuddies.Core.Card
 			LevelField levelField
 		)
 		{
+			// multiline types break syntax highlighting on vscode
+			// https://github.com/dotnet/csharp-tmLanguage/issues/179
+			// csharpier-ignore
 			var source =
-				new TaskCompletionSource<(List<
-						BuddiesStore<Vector2Int>
-					>?, ParseException?)>();
+				new TaskCompletionSource<(List<BuddiesStore<Vector2Int>>?, ParseException?)>();
 			var thread = new Thread(
 				new ThreadStart(() =>
 				{
@@ -441,7 +442,7 @@ namespace WalkingBuddies.Core.Card
 
 			i = ii;
 
-			if (ii >= input.Length && ii < 0)
+			if (ii >= input.Length || ii < 0)
 			{
 				return null;
 			}
