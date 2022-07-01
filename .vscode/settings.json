@@ -57,4 +57,5 @@
     "[csharp]": {
         "editor.defaultFormatter": "csharpier.csharpier-vscode",
     },
+    "csharp.semanticHighlighting.enabled": true,
 }
