@@ -60,7 +60,7 @@ find a way to get everyone across these lands to reach the land of oo!",
 					TileCardKinds.GRASS,
 					TileCardKinds.SEA,
 					TileCardKinds.GRASS,
-					TileCardKinds.RAINCLOUD,
+					TileCardKinds.GRASS,
 					TileCardKinds.HILL
 				},
 				{
@@ -71,7 +71,7 @@ find a way to get everyone across these lands to reach the land of oo!",
 					TileCardKinds.HILL,
 					TileCardKinds.GRASS,
 					TileCardKinds.GRASS,
-					TileCardKinds.GRASS,
+					TileCardKinds.RAINCLOUD,
 					TileCardKinds.GRASS
 				},
 			},

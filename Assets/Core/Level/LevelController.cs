@@ -14,6 +14,8 @@ using WalkingBuddies.Core.Utilty;
 
 namespace WalkingBuddies.Core.Level
 {
+	delegate void OnLevelControllerAnimateEnd();
+
 	public class LevelController : MonoBehaviour
 	{
 		[SerializeField]
@@ -22,11 +24,23 @@ namespace WalkingBuddies.Core.Level
 		[SerializeField]
 		private ToastCanvasBehaviour? toastCanvasBehaviour;
 
-		private TileCardKinds[,]? field;
+		private event OnLevelControllerAnimateEnd? OnAnimateEnd;
+
+		private TileCardKinds[,] field_ = LevelRepository.GetField(0);
+
+		public TileCardKinds[,] field
+		{
+			get => field_;
+		}
 
 		private GameObject[,]? tileField;
 
-		private BuddiesStore<GameObject> buddies = new();
+		private BuddiesStore<GameObject> buddyObjects_ = new();
+
+		public BuddiesStore<GameObject> buddyObjects
+		{
+			get => buddyObjects_;
+		}
 
 		private bool isHidden = false;
 
@@ -37,7 +51,9 @@ namespace WalkingBuddies.Core.Level
 		private readonly CancellationTokenSource cancellationTokenSource =
 			new();
 
-		private FloatingPersistentToast? toast;
+		private FloatingPersistentToast? parseErrorToast;
+
+		private BuddiesStore<FloatingPersistentToast?> buddiesStuckToasts;
 
 		void Awake()
 		{
@@ -55,20 +71,19 @@ namespace WalkingBuddies.Core.Level
 				);
 			}
 
-			field = LevelRepository.GetField(0);
 			tileField = LevelTileFieldFactory.Create(field, gameObject);
 
-			buddies.player = (GameObject)Instantiate(
+			buddyObjects_.player = (GameObject)Instantiate(
 				Resources.Load("@Prefabs/@Buddies/@Player", typeof(GameObject))
 			);
-			buddies.turtle = (GameObject)Instantiate(
+			buddyObjects_.turtle = (GameObject)Instantiate(
 				Resources.Load("@Prefabs/@Buddies/@Turtle", typeof(GameObject))
 			);
-			buddies.bird = (GameObject)Instantiate(
+			buddyObjects_.bird = (GameObject)Instantiate(
 				Resources.Load("@Prefabs/@Buddies/@Bird", typeof(GameObject))
 			);
 
-			foreach (var buddy in buddies)
+			foreach (var buddy in buddyObjects)
 			{
 				buddy.transform.SetParent(transform);
 			}
@@ -158,7 +173,7 @@ namespace WalkingBuddies.Core.Level
 						tile.SetActive(false);
 					}
 
-					foreach (var buddy in buddies)
+					foreach (var buddy in buddyObjects)
 					{
 						buddy.SetActive(false);
 					}
@@ -176,7 +191,7 @@ namespace WalkingBuddies.Core.Level
 					tile.SetActive(true);
 				}
 
-				foreach (var buddy in buddies)
+				foreach (var buddy in buddyObjects)
 				{
 					buddy.SetActive(true);
 				}
@@ -215,7 +230,7 @@ namespace WalkingBuddies.Core.Level
 			}
 
 			var levelField = new LevelField(field);
-			var tokens = CardTokeniser.Tokenise(cardGrid);
+			// var tokens = CardTokeniser.Tokenise(cardGrid);
 			// var tokens = new CardKinds[][]
 			// {
 			// 	new CardKinds[]
@@ -265,6 +280,49 @@ namespace WalkingBuddies.Core.Level
 			// 	// 	CardKinds.WALK,
 			// 	// },
 			// };
+			var tokens = new CardKinds[][]
+			{
+				new CardKinds[]
+				{
+					CardKinds.IF,
+					CardKinds.SEA,
+					CardKinds.THEN,
+					CardKinds.SWAP,
+					CardKinds.BIRD,
+					CardKinds.SWAP,
+					CardKinds.TURTLE,
+					CardKinds.WALK,
+					CardKinds.ELSE,
+					CardKinds.WALK,
+				},
+				// new CardKinds[]
+				// {
+				// 	CardKinds.IF,
+				// 	CardKinds.HILL,
+				// 	CardKinds.TURTLE,
+				// 	CardKinds.THEN,
+				// 	CardKinds.SWAP,
+				// 	CardKinds.BIRD,
+				// 	CardKinds.SWAP,
+				// 	CardKinds.TURTLE,
+				// 	CardKinds.ELSE,
+				// 	CardKinds.IF,
+				// 	CardKinds.SEA,
+				// 	CardKinds.THEN,
+				// 	CardKinds.SWAP,
+				// 	CardKinds.TURTLE,
+				// 	CardKinds.SWAP,
+				// 	CardKinds.BIRD,
+				// 	CardKinds.ELSE,
+				// 	CardKinds.WALK,
+				// },
+			};
+
+			parseErrorToast?.Destroy();
+			foreach (var toast in buddiesStuckToasts)
+			{
+				toast?.Destroy();
+			}
 
 			try
 			{
@@ -275,6 +333,93 @@ namespace WalkingBuddies.Core.Level
 				);
 
 				ScheduleAnimate(result);
+
+				void onAnimateEnd()
+				{
+					var success = levelField.success;
+
+					if (success.player && success.turtle && success.bird)
+					{
+						var toast = new ToastManager(toastCanvasBehaviour!)
+							.SetHeading("hooray!")
+							.SetParagraph(
+								"you helped the buddies through the level & got them to the land of oo"
+							)
+							.SetIcon("\ue876")
+							.SetButtonIcon("\ue5c8")
+							.SetButtonText("continue")
+							.SetIsCloseFabActive(false)
+							.Show();
+
+						void onVisibilityChange(bool isShown)
+						{
+							if (!isShown)
+							{
+								var scene = SceneManager.GetActiveScene();
+								SceneManager.LoadScene(scene.name);
+
+								toast.OnVisibilityChange -= onVisibilityChange;
+							}
+						}
+
+						toast.OnVisibilityChange += onVisibilityChange;
+					}
+					else
+					{
+						FloatingPersistentToast createToast() =>
+							new FloatingPersistentToast()
+								.SetHeading("stuck!")
+								.SetParagraph(
+									"I seem to be stuck here… i can't walk through this next tile!"
+								)
+								.SetIcon("\ue001")
+								.Show();
+
+						if (!success.player)
+						{
+							buddiesStuckToasts.player?.Destroy();
+							buddiesStuckToasts.player = createToast();
+							buddiesStuckToasts
+								.player
+								.canvasObject
+								.transform
+								.position = buddyObjects
+								.player
+								.transform
+								.position;
+						}
+
+						if (!success.turtle)
+						{
+							buddiesStuckToasts.turtle?.Destroy();
+							buddiesStuckToasts.turtle = createToast();
+							buddiesStuckToasts
+								.turtle
+								.canvasObject
+								.transform
+								.position = buddyObjects
+								.turtle
+								.transform
+								.position;
+						}
+
+						if (!success.bird)
+						{
+							buddiesStuckToasts.bird?.Destroy();
+							buddiesStuckToasts.bird = createToast();
+							buddiesStuckToasts
+								.bird
+								.canvasObject
+								.transform
+								.position = buddyObjects
+								.bird
+								.transform
+								.position;
+						}
+					}
+				}
+
+				OnAnimateEnd += onAnimateEnd;
 			}
 			catch (AbstractParseException e)
 			{
@@ -294,47 +439,16 @@ namespace WalkingBuddies.Core.Level
 					rowI >= e.input.Length ? e.input.Length - 1 : rowI
 				);
 
-				toast?.Destroy();
-
-				toast = new FloatingPersistentToast()
+				parseErrorToast = new FloatingPersistentToast()
 					.SetHeading("uh oh…")
 					.SetParagraph(e.Message)
 					.SetIcon("\ue001")
 					.Show();
 
-				toast.canvasObject.transform.SetParent(node.transform, false);
-
-				// new ToastManager(toastCanvasBehaviour)
-				// 	.SetHeading("uh oh…")
-				// 	.SetParagraph(e.Message)
-				// 	.SetIcon("\ue001")
-				// 	.SetButtonIcon("\ue5cd")
-				// 	.SetButtonText("dismiss")
-				// 	.Show();
-			}
-
-			var success = levelField.success;
-
-			if (success.player && success.turtle && success.bird)
-			{
-				var toast = new ToastManager(toastCanvasBehaviour!)
-					.SetHeading("hooray!")
-					.SetParagraph(
-						"you helped the buddies through the level & got them to the land of oo"
-					)
-					.SetIcon("\ue876")
-					.SetButtonIcon("\ue5c8")
-					.SetButtonText("continue")
-					.Show();
-
-				toast.OnVisibilityChange += (isShown) =>
-				{
-					if (!isShown)
-					{
-						var scene = SceneManager.GetActiveScene();
-						SceneManager.LoadScene(scene.name);
-					}
-				};
+				parseErrorToast.canvasObject.transform.SetParent(
+					node.transform,
+					false
+				);
 			}
 		}
 
@@ -366,17 +480,17 @@ namespace WalkingBuddies.Core.Level
 			{
 				var init = LevelField.buddyPositionsInit;
 
-				buddies.player.transform.localPosition = new(
+				buddyObjects_.player.transform.localPosition = new(
 					init.player.x,
 					y,
 					init.player.y
 				);
-				buddies.turtle.transform.localPosition = new(
+				buddyObjects_.turtle.transform.localPosition = new(
 					init.turtle.x,
 					y,
 					init.turtle.y
 				);
-				buddies.bird.transform.localPosition = new(
+				buddyObjects_.bird.transform.localPosition = new(
 					init.bird.x,
 					y,
 					init.bird.y
@@ -384,17 +498,17 @@ namespace WalkingBuddies.Core.Level
 			}
 			else if (buddyPositionsList.Count == 1)
 			{
-				buddies.player.transform.localPosition = new(
+				buddyObjects_.player.transform.localPosition = new(
 					buddyPositionsList[0].player.x,
 					y,
 					buddyPositionsList[0].player.y
 				);
-				buddies.turtle.transform.localPosition = new(
+				buddyObjects_.turtle.transform.localPosition = new(
 					buddyPositionsList[0].turtle.x,
 					y,
 					buddyPositionsList[0].turtle.y
 				);
-				buddies.bird.transform.localPosition = new(
+				buddyObjects_.bird.transform.localPosition = new(
 					buddyPositionsList[0].bird.x,
 					y,
 					buddyPositionsList[0].bird.y
@@ -478,38 +592,39 @@ namespace WalkingBuddies.Core.Level
 					{
 						if (shouldPlayerMove)
 						{
-							buddies.player.transform.localPosition = tweens
-								.player
-								.Current;
+							buddyObjects_.player.transform.localPosition =
+								tweens.player.Current;
 							shouldPlayerMove = tweens.player.MoveNext();
 						}
 						else
 						{
-							buddies.player.transform.localPosition = p2s.player;
+							buddyObjects_.player.transform.localPosition =
+								p2s.player;
 						}
 
 						if (shouldTurtleMove)
 						{
-							buddies.turtle.transform.localPosition = tweens
-								.turtle
-								.Current;
+							buddyObjects_.turtle.transform.localPosition =
+								tweens.turtle.Current;
 							shouldTurtleMove = tweens.turtle.MoveNext();
 						}
 						else
 						{
-							buddies.turtle.transform.localPosition = p2s.turtle;
+							buddyObjects_.turtle.transform.localPosition =
+								p2s.turtle;
 						}
 
 						if (shouldBirdMove)
 						{
-							buddies.bird.transform.localPosition = tweens
+							buddyObjects_.bird.transform.localPosition = tweens
 								.bird
 								.Current;
 							shouldBirdMove = tweens.bird.MoveNext();
 						}
 						else
 						{
-							buddies.bird.transform.localPosition = p2s.bird;
+							buddyObjects_.bird.transform.localPosition =
+								p2s.bird;
 						}
 
 						yield return null;
@@ -517,22 +632,24 @@ namespace WalkingBuddies.Core.Level
 				}
 
 				var lastPositions = buddyPositionsList.Last();
-				buddies.player.transform.localPosition = new(
+				buddyObjects_.player.transform.localPosition = new(
 					lastPositions.player.x,
 					y,
 					lastPositions.player.y
 				);
-				buddies.turtle.transform.localPosition = new(
+				buddyObjects_.turtle.transform.localPosition = new(
 					lastPositions.turtle.x,
 					y,
 					lastPositions.turtle.y
 				);
-				buddies.bird.transform.localPosition = new(
+				buddyObjects_.bird.transform.localPosition = new(
 					lastPositions.bird.x,
 					y,
 					lastPositions.bird.y
 				);
 			}
+
+			OnAnimateEnd?.Invoke();
 		}
 	}
 }
