@@ -1,7 +1,4 @@
-using System.Collections;
-using System;
 using UnityEngine;
-using Unity.VisualScripting;
 
 namespace WalkingBuddies.Core.Ui
 {

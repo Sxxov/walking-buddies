@@ -1,12 +1,5 @@
-using System.Net.Mime;
 using System;
-using System.Collections;
-using System.Runtime.CompilerServices;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.Serialization;
-using UnityEditor;
-using UnityEditor.UI;
 
 namespace WalkingBuddies.Core.Ui
 {

@@ -1,10 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using UnityEngine;
 using WalkingBuddies.Core.Card;
-using WalkingBuddies.Core.Level;
 
 namespace WalkingBuddies.Core.Ar
 {
