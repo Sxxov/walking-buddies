@@ -25,7 +25,7 @@ namespace WalkingBuddies.Core.Card
 			// https://github.com/dotnet/csharp-tmLanguage/issues/179
 			// csharpier-ignore
 			var source =
-				new TaskCompletionSource<(List<BuddiesStore<Vector2Int>>?, ParseException?)>();
+				new TaskCompletionSource<(List<BuddiesStore<Vector2Int>>?, AbstractParseException?)>();
 			var thread = new Thread(
 				new ThreadStart(() =>
 				{
@@ -42,7 +42,7 @@ namespace WalkingBuddies.Core.Card
 							)
 						);
 					}
-					catch (ParseException e)
+					catch (AbstractParseException e)
 					{
 						source.SetResult((null, e));
 					}
@@ -115,7 +115,6 @@ namespace WalkingBuddies.Core.Card
 						// is repeating
 						if (currI == targetI)
 						{
-							Debug.Log($"repeating: {currI} == {targetI}");
 							levelField.End();
 
 							goto ret;
@@ -177,7 +176,7 @@ namespace WalkingBuddies.Core.Card
 
 				if (i < input.Length)
 				{
-					throw new ParseException(
+					throw new ExpectedsParseException(
 						input,
 						i,
 						CardKindRepository.kinds.action
@@ -246,7 +245,7 @@ namespace WalkingBuddies.Core.Card
 
 			if (i >= input.Length)
 			{
-				throw new ParseException(
+				throw new ExpectedsParseException(
 					input,
 					i,
 					CardKindRepository.kinds.action
@@ -277,7 +276,7 @@ namespace WalkingBuddies.Core.Card
 
 				if (i >= input.Length)
 				{
-					throw new ParseException(
+					throw new ExpectedsParseException(
 						input,
 						i,
 						CardKindRepository.kinds.action
@@ -485,7 +484,7 @@ namespace WalkingBuddies.Core.Card
 			{
 				if (isRequired)
 				{
-					throw new ParseException(input, i, expecteds);
+					throw new ExpectedsParseException(input, i, expecteds);
 				}
 				else
 				{
@@ -497,7 +496,7 @@ namespace WalkingBuddies.Core.Card
 			{
 				if (isRequired)
 				{
-					throw new ParseException(input, i, expecteds);
+					throw new ExpectedsParseException(input, i, expecteds);
 				}
 				else
 				{
@@ -519,7 +518,7 @@ namespace WalkingBuddies.Core.Card
 			{
 				if (isRequired)
 				{
-					throw new ParseException(input, i, predicate);
+					throw new PredicateParseException(input, i, predicate);
 				}
 				else
 				{
@@ -530,7 +529,7 @@ namespace WalkingBuddies.Core.Card
 			{
 				if (isRequired)
 				{
-					throw new ParseException(input, i, predicate);
+					throw new PredicateParseException(input, i, predicate);
 				}
 				else
 				{

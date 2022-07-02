@@ -10,12 +10,19 @@ namespace WalkingBuddies.Core.Ar
 	public class TargetBehaviour : MonoBehaviour
 	{
 		[SerializeField]
-		private TargetController controller = null!;
+		private TargetController? controller;
 
 		public CardKinds kind;
 
-		void Start()
+		void Awake()
 		{
+			if (controller is null)
+			{
+				throw new InvalidOperationException(
+					"Attempted to construct TargetBehaviour without target controller"
+				);
+			}
+
 			GetComponent<ObserverBehaviour>().OnTargetStatusChanged +=
 				OnTargetStatusChanged;
 
@@ -48,13 +55,15 @@ namespace WalkingBuddies.Core.Ar
 		private IEnumerator OnTargetFound()
 		{
 			yield return null;
-			controller.Add(this);
+
+			controller!.Add(this);
 		}
 
 		private IEnumerator OnTargetLost()
 		{
 			yield return null;
-			controller.Remove(this);
+
+			controller!.Remove(this);
 		}
 	}
 }

@@ -17,10 +17,10 @@ namespace WalkingBuddies.Core.Level
 	public class LevelController : MonoBehaviour
 	{
 		[SerializeField]
-		private TargetController targetController = null!;
+		private TargetController? targetController;
 
 		[SerializeField]
-		private CanvasBehaviour canvasBehaviour = null!;
+		private ToastCanvasBehaviour? toastCanvasBehaviour;
 
 		private TileCardKinds[,]? field;
 
@@ -37,19 +37,35 @@ namespace WalkingBuddies.Core.Level
 		private readonly CancellationTokenSource cancellationTokenSource =
 			new();
 
-		IEnumerator Start()
+		private FloatingPersistentToast? toast;
+
+		void Awake()
 		{
+			if (targetController is null)
+			{
+				throw new InvalidOperationException(
+					"Attempted to construct LevelController without target controller"
+				);
+			}
+
+			if (toastCanvasBehaviour is null)
+			{
+				throw new InvalidOperationException(
+					"Attempted to construct LevelController without toast canvas"
+				);
+			}
+
 			field = LevelRepository.GetField(0);
 			tileField = LevelTileFieldFactory.Create(field, gameObject);
 
 			buddies.player = (GameObject)Instantiate(
-				Resources.Load("Prefabs/Player", typeof(GameObject))
+				Resources.Load("@Prefabs/@Buddies/@Player", typeof(GameObject))
 			);
 			buddies.turtle = (GameObject)Instantiate(
-				Resources.Load("Prefabs/Turtle", typeof(GameObject))
+				Resources.Load("@Prefabs/@Buddies/@Turtle", typeof(GameObject))
 			);
 			buddies.bird = (GameObject)Instantiate(
-				Resources.Load("Prefabs/Bird", typeof(GameObject))
+				Resources.Load("@Prefabs/@Buddies/@Bird", typeof(GameObject))
 			);
 
 			foreach (var buddy in buddies)
@@ -62,10 +78,13 @@ namespace WalkingBuddies.Core.Level
 			isInLevel = true;
 
 			targetController.OnGridUpdate += OnGridUpdate;
+		}
 
-			yield return null;
+		IEnumerator Start()
+		{
+			var toastManager = new ToastManager(toastCanvasBehaviour!);
 
-			new Toast(canvasBehaviour)
+			toastManager
 				.SetHeading("18 grass\n3 seas\n3 rainclouds\n*3 hills*")
 				.SetParagraph(
 					"the buddies managed to walk into a land with grass, sea, rainclouds, & hills!\n\nunfortunately for turtle, he can't climb over hills…\n\nfind a way to get everyone across these lands to reach the land of oo!"
@@ -74,11 +93,63 @@ namespace WalkingBuddies.Core.Level
 				.SetButtonIcon("\ue5c8")
 				.SetButtonText("start!")
 				.Show();
+
+			yield return new WaitUntil(() => !toastManager.isShown);
+
+			toastManager
+				.SetHeading("oh, a freshie!")
+				.SetParagraph(
+					"seems like this is the first time you're trying to instruct the buddies, let's get you started!"
+				)
+				.SetIcon("\ue16e")
+				.SetButtonIcon("\ue5c8")
+				.SetButtonText("continue!")
+				.SetIsCloseFabActive(false)
+				.Show();
+
+			yield return new WaitUntil(() => !toastManager.isShown);
+
+			toastManager
+				.SetHeading("step 1: allocate…")
+				.SetParagraph(
+					"find a blank surface large enough to compose cards on"
+				)
+				.SetIcon("\ue16e")
+				.SetButtonIcon("\ue5c8")
+				.SetButtonText("found it!")
+				.SetIsCloseFabActive(false)
+				.Show();
+
+			yield return new WaitUntil(() => !toastManager.isShown);
+
+			toastManager
+				.SetHeading("step 2: compose…")
+				.SetParagraph(
+					$"arrange your cards & point your camera at them!\n\ncards are interpreted as instructions for the buddies. you can form a full instruction by stacking cards on top of each other, ensuring each of their top halves are visible. you can then chain instructions together by placing the next set of cards to the right of the last one!\n\nfor example, you can form a full instruction by sequencing the following cards:\n\n{CardTokeniser.GetNotatedName(CardKinds.IF)}\n{CardTokeniser.GetNotatedName(CardKinds.GRASS)}\n{CardTokeniser.GetNotatedName(CardKinds.THEN)}\n*{CardTokeniser.GetNotatedName(CardKinds.WALK)}"
+				)
+				.SetIcon("\ue16e")
+				.SetButtonIcon("\ue5c8")
+				.SetButtonText("got it!")
+				.SetIsCloseFabActive(false)
+				.Show();
+
+			yield return new WaitUntil(() => !toastManager.isShown);
+
+			toastManager
+				.SetHeading("step 3: profit!")
+				.SetParagraph(
+					"you're ready to go!\n\nget creative & get the buddies to the land of oo!"
+				)
+				.SetIcon("\ue16e")
+				.SetButtonIcon("\ue5c8")
+				.SetButtonText("let's go!")
+				.SetIsCloseFabActive(false)
+				.Show();
 		}
 
 		void Update()
 		{
-			if (targetController.cardGrid.nodes.Length < 1)
+			if (targetController!.cardGrid.nodes.Length < 1)
 			{
 				if (!isHidden)
 				{
@@ -143,51 +214,127 @@ namespace WalkingBuddies.Core.Level
 				return;
 			}
 
+			var levelField = new LevelField(field);
+			var tokens = CardTokeniser.Tokenise(cardGrid);
+			// var tokens = new CardKinds[][]
+			// {
+			// 	new CardKinds[]
+			// 	{
+			// 		CardKinds.IF,
+			// 		CardKinds.HILL,
+			// 		CardKinds.TURTLE,
+			// 		CardKinds.THEN,
+			// 		CardKinds.SWAP,
+			// 		CardKinds.BIRD,
+			// 		CardKinds.SWAP,
+			// 		CardKinds.TURTLE,
+			// 		CardKinds.ELSE,
+			// 		CardKinds.WALK,
+			// 	},
+			// 	new CardKinds[]
+			// 	{
+			// 		CardKinds.IF,
+			// 		CardKinds.SEA,
+			// 		CardKinds.THEN,
+			// 		CardKinds.SWAP,
+			// 		CardKinds.TURTLE,
+			// 		CardKinds.SWAP,
+			// 		CardKinds.BIRD,
+			// 		CardKinds.ELSE,
+			// 		CardKinds.WALK,
+			// 	},
+			// 	// new CardKinds[]
+			// 	// {
+			// 	// 	CardKinds.IF,
+			// 	// 	CardKinds.HILL,
+			// 	// 	CardKinds.TURTLE,
+			// 	// 	CardKinds.THEN,
+			// 	// 	CardKinds.SWAP,
+			// 	// 	CardKinds.BIRD,
+			// 	// 	CardKinds.SWAP,
+			// 	// 	CardKinds.TURTLE,
+			// 	// 	CardKinds.ELSE,
+			// 	// 	CardKinds.IF,
+			// 	// 	CardKinds.SEA,
+			// 	// 	CardKinds.THEN,
+			// 	// 	CardKinds.SWAP,
+			// 	// 	CardKinds.TURTLE,
+			// 	// 	CardKinds.SWAP,
+			// 	// 	CardKinds.BIRD,
+			// 	// 	CardKinds.ELSE,
+			// 	// 	CardKinds.WALK,
+			// 	// },
+			// };
+
 			try
 			{
-				var levelField = new LevelField(field);
-				var tokens = CardTokeniser.Tokenise(cardGrid);
 				var result = await CardInterpreter.InterpretAsync(
 					tokens,
 					cancellationTokenSource.Token,
 					levelField
 				);
 
-				var success = levelField.success;
-
 				ScheduleAnimate(result);
-
-				if (success.player && success.turtle && success.bird)
-				{
-					var toast = new Toast(canvasBehaviour)
-						.SetHeading("hooray!")
-						.SetParagraph(
-							"you helped the buddies through the level & got them to the land of oo"
-						)
-						.SetIcon("\ue876")
-						.SetButtonIcon("\ue5c8")
-						.SetButtonText("continue")
-						.Show();
-
-					toast.OnVisibilityChange += (isShown) =>
-					{
-						if (!isShown)
-						{
-							var scene = SceneManager.GetActiveScene();
-							SceneManager.LoadScene(scene.name);
-						}
-					};
-				}
 			}
-			catch (ParseException e)
+			catch (AbstractParseException e)
 			{
-				new Toast(canvasBehaviour)
+				var rowI = e.i;
+				var colI = Array.IndexOf(tokens, e.input);
+
+				if (colI < 0)
+				{
+					throw new InvalidOperationException(
+						"Attempted to generate a persistent toast for an input that was not in the list of tokens"
+					);
+				}
+
+				var node = CardTokeniser.NodeAt(
+					cardGrid,
+					colI,
+					rowI >= e.input.Length ? e.input.Length - 1 : rowI
+				);
+
+				toast?.Destroy();
+
+				toast = new FloatingPersistentToast()
 					.SetHeading("uh oh…")
 					.SetParagraph(e.Message)
 					.SetIcon("\ue001")
-					.SetButtonIcon("\ue5cd")
-					.SetButtonText("dismiss")
 					.Show();
+
+				toast.canvasObject.transform.SetParent(node.transform, false);
+
+				// new ToastManager(toastCanvasBehaviour)
+				// 	.SetHeading("uh oh…")
+				// 	.SetParagraph(e.Message)
+				// 	.SetIcon("\ue001")
+				// 	.SetButtonIcon("\ue5cd")
+				// 	.SetButtonText("dismiss")
+				// 	.Show();
+			}
+
+			var success = levelField.success;
+
+			if (success.player && success.turtle && success.bird)
+			{
+				var toast = new ToastManager(toastCanvasBehaviour!)
+					.SetHeading("hooray!")
+					.SetParagraph(
+						"you helped the buddies through the level & got them to the land of oo"
+					)
+					.SetIcon("\ue876")
+					.SetButtonIcon("\ue5c8")
+					.SetButtonText("continue")
+					.Show();
+
+				toast.OnVisibilityChange += (isShown) =>
+				{
+					if (!isShown)
+					{
+						var scene = SceneManager.GetActiveScene();
+						SceneManager.LoadScene(scene.name);
+					}
+				};
 			}
 		}
 
