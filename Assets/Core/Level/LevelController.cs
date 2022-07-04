@@ -264,92 +264,7 @@ namespace WalkingBuddies.Core.Level
 
 				ScheduleAnimate(result);
 
-				void onAnimateEnd()
-				{
-					var success = levelField.success;
-
-					if (success.player && success.turtle && success.bird)
-					{
-						var toast = new ToastManager(toastCanvasBehaviour!)
-							.SetHeading("hooray!")
-							.SetParagraph(
-								"you helped the buddies through the level & got them to the land of oo"
-							)
-							.SetIcon("\ue876")
-							.SetButtonIcon("\ue5c8")
-							.SetButtonText("continue")
-							.SetIsCloseFabActive(false)
-							.Show();
-
-						void onVisibilityChange(bool isShown)
-						{
-							if (!isShown)
-							{
-								var scene = SceneManager.GetActiveScene();
-								SceneManager.LoadScene(scene.name);
-
-								toast.OnVisibilityChange -= onVisibilityChange;
-							}
-						}
-
-						toast.OnVisibilityChange += onVisibilityChange;
-					}
-					else
-					{
-						FloatingPersistentToast createToast() =>
-							new FloatingPersistentToast()
-								.SetHeading("stuck!")
-								.SetParagraph(
-									"I seem to be stuck here… i can't walk through this next tile!"
-								)
-								.SetIcon("\ue001")
-								.Show();
-
-						if (!success.player)
-						{
-							buddiesStuckToasts.player?.Destroy();
-							buddiesStuckToasts.player = createToast();
-							buddiesStuckToasts
-								.player
-								.canvasObject
-								.transform
-								.position = buddyObjects
-								.player
-								.transform
-								.position;
-						}
-
-						if (!success.turtle)
-						{
-							buddiesStuckToasts.turtle?.Destroy();
-							buddiesStuckToasts.turtle = createToast();
-							buddiesStuckToasts
-								.turtle
-								.canvasObject
-								.transform
-								.position = buddyObjects
-								.turtle
-								.transform
-								.position;
-						}
-
-						if (!success.bird)
-						{
-							buddiesStuckToasts.bird?.Destroy();
-							buddiesStuckToasts.bird = createToast();
-							buddiesStuckToasts
-								.bird
-								.canvasObject
-								.transform
-								.position = buddyObjects
-								.bird
-								.transform
-								.position;
-						}
-					}
-				}
-
-				OnAnimateEnd += onAnimateEnd;
+				OnAnimateEnd = GenerateOnAnimateEnd(levelField.success);
 			}
 			catch (AbstractParseException e)
 			{
@@ -382,6 +297,92 @@ namespace WalkingBuddies.Core.Level
 				);
 			}
 		}
+
+		private OnLevelControllerAnimateEnd GenerateOnAnimateEnd(
+			BuddiesStore<bool> success
+		) =>
+			() =>
+			{
+				if (success.player && success.turtle && success.bird)
+				{
+					var toast = new ToastManager(toastCanvasBehaviour!)
+						.SetHeading("hooray!")
+						.SetParagraph(
+							"you helped the buddies through the level & got them to the land of oo"
+						)
+						.SetIcon("\ue876")
+						.SetButtonIcon("\ue5c8")
+						.SetButtonText("continue")
+						.SetIsCloseFabActive(false)
+						.Show();
+
+					void onVisibilityChange(bool isShown)
+					{
+						if (!isShown)
+						{
+							SceneManager.LoadScene(
+								SceneManager.GetActiveScene().buildIndex
+							);
+
+							toast.OnVisibilityChange -= onVisibilityChange;
+						}
+					}
+
+					toast.OnVisibilityChange += onVisibilityChange;
+				}
+				else
+				{
+					targetController!.OnGridUpdate -= OnGridUpdate;
+
+					parseErrorToast?.Destroy();
+					foreach (var toast in buddiesStuckToasts)
+					{
+						toast?.Destroy();
+					}
+
+					FloatingPersistentToast createToast() =>
+						new FloatingPersistentToast()
+							.SetHeading("stuck!")
+							.SetParagraph(
+								"I seem to be stuck here… i can't walk through this next tile!"
+							)
+							.SetIcon("\ue001")
+							.Show();
+
+					if (!success.player)
+					{
+						buddiesStuckToasts.player?.Destroy();
+						buddiesStuckToasts.player = createToast();
+						buddiesStuckToasts
+							.player
+							.canvasObject
+							.transform
+							.position = buddyObjects.player.transform.position;
+					}
+
+					if (!success.turtle)
+					{
+						buddiesStuckToasts.turtle?.Destroy();
+						buddiesStuckToasts.turtle = createToast();
+						buddiesStuckToasts
+							.turtle
+							.canvasObject
+							.transform
+							.position = buddyObjects.turtle.transform.position;
+					}
+
+					if (!success.bird)
+					{
+						buddiesStuckToasts.bird?.Destroy();
+						buddiesStuckToasts.bird = createToast();
+						buddiesStuckToasts
+							.bird
+							.canvasObject
+							.transform
+							.position = buddyObjects.bird.transform.position;
+					}
+				}
+			};
 
 		private void ScheduleAnimate(
 			List<BuddiesStore<Vector2Int>> buddyPositionsList,
