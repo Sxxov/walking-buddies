@@ -13,6 +13,8 @@ namespace WalkingBuddies.Core.Ar
 
 		public CardKinds kind;
 
+		private GameObject? outlineObject;
+
 		void Awake()
 		{
 			if (controller is null)
@@ -55,12 +57,25 @@ namespace WalkingBuddies.Core.Ar
 		{
 			yield return null;
 
+			outlineObject = (GameObject)Instantiate(
+				Resources.Load(
+					"@Prefabs/@Ui/@TargetOutline",
+					typeof(GameObject)
+				)
+			);
+			outlineObject.transform.SetParent(transform, false);
+
 			controller!.Add(this);
 		}
 
 		private IEnumerator OnTargetLost()
 		{
 			yield return null;
+
+			if (outlineObject is not null)
+			{
+				Destroy(outlineObject);
+			}
 
 			controller!.Remove(this);
 		}
