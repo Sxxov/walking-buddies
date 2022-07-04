@@ -20,7 +20,7 @@ namespace WalkingBuddies.Core.Card
 		)
 			: base(
 				i >= input.Length
-					? "Unexpected end of cards"
+					? $"Expected the next card to pass predicate({predicate}), but there were no more cards at the end of the input"
 					: $"Expected to pass predicate({predicate}), but got {CardTokeniser.GetNotatedName(input[i])}, which didn't pass{(message.Length > 0 ? $" — {message}" : "")}",
 				input,
 				i

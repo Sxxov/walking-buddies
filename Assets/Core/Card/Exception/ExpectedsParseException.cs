@@ -20,7 +20,7 @@ namespace WalkingBuddies.Core.Card
 		)
 			: base(
 				i >= input.Length
-					? "Unexpected end of cards"
+					? $"Expected the next card to be {string.Join(" | ", expecteds.Select((expected) => CardTokeniser.GetNotatedName(expected)))}, but there were no more cards at the end of the input"
 					: $"Expected {string.Join(" | ", expecteds.Select((expected) => CardTokeniser.GetNotatedName(expected)))} but got {CardTokeniser.GetNotatedName(input[i])}{(message.Length > 0 ? $" — {message}" : "")}",
 				input,
 				i
