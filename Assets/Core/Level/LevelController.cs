@@ -369,6 +369,7 @@ namespace WalkingBuddies.Core.Level
 					rowI >= e.input.Length ? e.input.Length - 1 : rowI
 				);
 
+				parseErrorToast?.Destroy();
 				parseErrorToast = new FloatingPersistentToast()
 					.SetHeading("uh oh…")
 					.SetParagraph(e.Message)
