@@ -94,12 +94,9 @@ namespace WalkingBuddies.Core.Card
 					CardNode,
 					(CardNode node, float distance, CardEdges edge)
 				>();
-			var queue = new List<CardNode>() { nodes[0] };
 
-			while (queue.Count > 0)
+			foreach (var targetNode in nodes)
 			{
-				var targetNode = queue[0];
-				queue.RemoveAt(0);
 				var targetNodeInitialPosition = targetNode.transform.position;
 
 				var edgeToNodeAndDistance =
@@ -155,7 +152,7 @@ namespace WalkingBuddies.Core.Card
 						);
 
 						if (
-							postMoveDistance - preMoveDistance < 0
+							postMoveDistance < preMoveDistance
 							&& postMoveDistance < nearestDistance
 						)
 						{
@@ -203,8 +200,6 @@ namespace WalkingBuddies.Core.Card
 							edge,
 							(nearestNode, nearestDistance)
 						);
-
-						queue.Add(nearestNode);
 					}
 				}
 			}
