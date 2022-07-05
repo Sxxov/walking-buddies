@@ -154,5 +154,8 @@ namespace WalkingBuddies.Core.Card
 					break;
 			}
 		}
+
+		public override string ToString() =>
+			$"{kind} — top: {top?.kind}, bottom: {bottom?.kind}, left: {left?.kind}, right: {right?.kind}";
 	}
 }
