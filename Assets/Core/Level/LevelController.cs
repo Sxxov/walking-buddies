@@ -88,7 +88,9 @@ namespace WalkingBuddies.Core.Level
 				buddy.transform.SetParent(transform);
 			}
 
-			ScheduleAnimate(new List<BuddiesStore<Vector2Int>>());
+			ScheduleAnimate(
+				buddyPositionsList: new List<BuddiesStore<Vector2Int>>()
+			);
 
 			isInLevel = true;
 
@@ -248,12 +250,6 @@ namespace WalkingBuddies.Core.Level
 			// 	},
 			// };
 
-			parseErrorToast?.Destroy();
-			foreach (var toast in buddiesStuckToasts)
-			{
-				toast?.Destroy();
-			}
-
 			try
 			{
 				var result = await CardInterpreter.InterpretAsync(
@@ -261,6 +257,12 @@ namespace WalkingBuddies.Core.Level
 					cancellationTokenSource.Token,
 					levelField
 				);
+
+				parseErrorToast?.Destroy();
+				foreach (var toast in buddiesStuckToasts)
+				{
+					toast?.Destroy();
+				}
 
 				ScheduleAnimate(result);
 
@@ -305,6 +307,14 @@ namespace WalkingBuddies.Core.Level
 			{
 				if (success.player && success.turtle && success.bird)
 				{
+					targetController!.OnGridUpdate -= OnGridUpdate;
+
+					parseErrorToast?.Destroy();
+					foreach (var buddiesStuckToast in buddiesStuckToasts)
+					{
+						buddiesStuckToast?.Destroy();
+					}
+
 					var toast = new ToastManager(toastCanvasBehaviour!)
 						.SetHeading("hooray!")
 						.SetParagraph(
@@ -318,22 +328,17 @@ namespace WalkingBuddies.Core.Level
 
 					void onVisibilityChange(bool isShown)
 					{
-						if (!isShown)
-						{
-							SceneManager.LoadScene(
-								SceneManager.GetActiveScene().buildIndex
-							);
+						SceneManager.LoadScene(
+							SceneManager.GetActiveScene().buildIndex
+						);
 
-							toast.OnVisibilityChange -= onVisibilityChange;
-						}
+						toast.OnVisibilityChange -= onVisibilityChange;
 					}
 
 					toast.OnVisibilityChange += onVisibilityChange;
 				}
 				else
 				{
-					targetController!.OnGridUpdate -= OnGridUpdate;
-
 					parseErrorToast?.Destroy();
 					foreach (var toast in buddiesStuckToasts)
 					{
