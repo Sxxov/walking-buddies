@@ -15,6 +15,8 @@ namespace WalkingBuddies.Core.Ar
 
 		private GameObject? outlineObject;
 
+		private bool isFound;
+
 		void Awake()
 		{
 			if (controller is null)
@@ -55,6 +57,12 @@ namespace WalkingBuddies.Core.Ar
 
 		private IEnumerator OnTargetFound()
 		{
+			if (isFound)
+			{
+				yield break;
+			}
+			isFound = true;
+
 			yield return null;
 
 			outlineObject = (GameObject)Instantiate(
@@ -70,6 +78,12 @@ namespace WalkingBuddies.Core.Ar
 
 		private IEnumerator OnTargetLost()
 		{
+			if (!isFound)
+			{
+				yield break;
+			}
+			isFound = false;
+
 			yield return null;
 
 			if (outlineObject is not null)
